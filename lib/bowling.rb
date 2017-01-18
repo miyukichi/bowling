@@ -10,7 +10,7 @@ class Bowling
   def add_score(pins)
    @frame_pins << pins
    
-    if @frame_pins.size == 2
+    if @frame_pins.size == 2 || strike?(@frame_pins)
       @scores << @frame_pins
       @frame_pins = []
     end
@@ -22,15 +22,35 @@ class Bowling
   
   def calc_score
     @scores.each.with_index do |score, i|
-      if spare?(score) && not_last_frame?(i)
-        @total_score += 10 + calc_spare_bonus(i)
-      else
-        @total_score += score.inject(:+)
-      end
+    @total_score += score.inject(:+) + bonus_point(i)
+      
+      
+      # if strike?(score) && not_last_frame?(i)
+      #   @total_score += 10 + calc_strike_bonus(i)
+      # elsif spare?(score) && not_last_frame?(i)
+      #   @total_score += 10 + calc_spare_bonus(i)
+      # elsif
+      #   @total_score += score.inject(:+)
+      # end
     end
   end
 
+
   private
+  
+  def bonus_point(index)
+    if strike?(@scores[index]) && not_last_frame?(index)
+      calc_strike_bonus(index)
+    elsif spare?(@scores[index]) && not_last_frame?(index)
+      calc_spare_bonus(index)
+    else
+      0
+    end
+  end
+  
+  def strike?(score)
+    score.first == 10
+  end
   
   def spare?(score)
     score.inject(:+) == 10
@@ -42,5 +62,13 @@ class Bowling
   
   def calc_spare_bonus(index)
     @scores[index + 1].first
+  end
+  
+  def calc_strike_bonus(index)
+    if strike?(@scores[index + 1]) && not_last_frame?(index)
+      @scores[index + 1].first + @scores[index + 2]&.first.to_i
+    else
+      @scores[index + 1].first + @scores[index + 1].last
+    end
   end
 end
