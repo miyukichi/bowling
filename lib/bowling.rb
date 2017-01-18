@@ -5,6 +5,8 @@ class Bowling
     @scores = []
     
     @frame_pins = []
+    
+    @frame_score = []
   end
   
   def add_score(pins)
@@ -22,17 +24,14 @@ class Bowling
   
   def calc_score
     @scores.each.with_index do |score, i|
-    @total_score += score.inject(:+) + bonus_point(i)
-      
-      
-      # if strike?(score) && not_last_frame?(i)
-      #   @total_score += 10 + calc_strike_bonus(i)
-      # elsif spare?(score) && not_last_frame?(i)
-      #   @total_score += 10 + calc_spare_bonus(i)
-      # elsif
-      #   @total_score += score.inject(:+)
-      # end
+      @total_score += score.inject(:+) + bonus_point(i)
+      @frame_score << @total_score
     end
+  end
+  
+  def frame_score(frame)
+    @frame_score[frame - 1]
+    
   end
 
 
